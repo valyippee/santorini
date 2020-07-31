@@ -1,6 +1,6 @@
-from santorini.referee.game import play
-from santorini.referee.player import PlayerWrapper
-from santorini.referee.options import get_options
+from game import play
+from player import PlayerWrapper
+from options import get_options
 
 
 def main():
