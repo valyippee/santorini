@@ -4,14 +4,15 @@ class Board:
     def __init__(self):
         """
 
-        Initialises a dictionary where the key is (column, row) of the board and
-        the value is (levels, player colour).
+        Initialises board_dict, a dictionary where the key is (column, row) of the board and
+        the value is (levels, player colour) and players_locations, a dictionary to store players' locations
 
         """
         self.board_dict = dict()
         for i in range(self.BOARD_WIDTH):
             for j in range(self.BOARD_WIDTH):
                 self.board_dict[i, j] = 0, None
+        self.players_locations = dict()
 
     def move(self, player_actions):
         """
