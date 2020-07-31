@@ -10,6 +10,9 @@ class PlayerWrapper:
         self.colour = colour
         self.player = self.Player(colour)
 
+    def init_starting_loc(self):
+        self.player.init_starting_loc()
+
     def load_class(self, player_location):
         package_name, class_name = player_location
         module = importlib.import_module(package_name)
