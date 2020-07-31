@@ -21,11 +21,29 @@ def play(players):
         player.init(colour)
     current_player, next_player = players
 
-    for i in range(2):
+    initialised = False
+    while not initialised:
         game.board.display_board()
-        print(current_player.colour + "'s turn to choose starting locations")
-        current_player.init_starting_loc()
-        current_player, next_player = next_player, current_player
+        print(current_player.colour + "'s turn")
+        chosen_locations = current_player.choose_starting_loc()
+        # check if locations are valid
+        if len(chosen_locations) != 2 or chosen_locations[0] == chosen_locations[1] or \
+                chosen_locations[0] in game.board.players_locations or \
+                chosen_locations[1] in game.board.players_locations:
+            print("Those are not valid locations. Please try again")
+            continue
+
+        # update locations (referee and players)
+        game.update_starting_loc(current_player.colour, chosen_locations)
+        print(game.board.players_locations)
+        print(game.board.board_dict)
+        for player in players:
+            player.update_starting_loc(current_player.colour, chosen_locations)
+
+        if current_player.colour == "red":
+            current_player, next_player = next_player, current_player
+        else:
+            initialised = True
 
     while not game.check_won():
         game.board.display_board()
@@ -36,10 +54,11 @@ def play(players):
 
         print(current_player.colour + "'s turn")
         player_actions = current_player.action()
-        print("Player's action: move from " + str(player_actions[0] + " to " + str(player_actions[1])))
-        print("Build at " + str(player_actions[3]))
-        # referee update
-        if not game.update(player_actions):
+
+        print("Player's action: move from " + str(player_actions[0]) + " to " + str(player_actions[1]))
+        print("Build at " + str(player_actions[2]))
+        # check if move is valid + referee update if valid
+        if game.board.players_locations[player_actions[0]] != current_player.colour or not game.update(player_actions):
             print("That is not a valid move. Please try again.")
             continue
         # players update
@@ -116,3 +135,13 @@ class Game:
                 if self.board.board_dict[(x_location, y_location + i)][0] < 4:
                     return True
         return False
+
+    def update_starting_loc(self, player_colour, starting_loc):
+        for location in starting_loc:
+            self.board.players_locations[location] = player_colour
+            location_level = self.board.board_dict[location][0]
+            self.board.board_dict[location] = location_level, player_colour
+
+if __name__ == '__main__':
+    tuple1 = list(eval(str("(2, 2), 0")))
+    print(len(tuple1))

@@ -11,8 +11,14 @@ class Player:
 
     def action(self):
         chosen_move = input("Please enter move: ")
-        return chosen_move
+        return list(eval(chosen_move))
 
-    def init_starting_loc(self):
+    def choose_starting_loc(self):
         chosen_move = input("Please enter starting locations: ")
-        return chosen_move
+        return list(eval(chosen_move))
+
+    def update_starting_loc(self, player_colour, starting_loc):
+        for location in starting_loc:
+            self.board.players_locations[location] = player_colour
+            location_level = self.board.board_dict[location][0]
+            self.board.board_dict[location] = location_level, player_colour
