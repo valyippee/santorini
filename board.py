@@ -12,7 +12,11 @@ class Board:
         self.board_dict = dict()
         for i in range(self.BOARD_WIDTH):
             for j in range(self.BOARD_WIDTH):
-                self.board_dict[i, j] = 0, None
+                if (i, j) == (2, 2):
+                    self.board_dict[i, j] = 3, "red"
+                else:
+                    self.board_dict[i, j] = 0, None
+
         self.players_locations = dict()
 
     def move_and_build(self, player_actions):
@@ -80,12 +84,62 @@ class Board:
         return False
 
     def display_board(self):
-        pass
+        template = """# {}
+        # +-----------+-----------+-----------+-----------+-----------+
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # +-----------+-----------+-----------+-----------+-----------+
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # +-----------+-----------+-----------+-----------+-----------+
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # +-----------+-----------+-----------+-----------+-----------+
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # +-----------+-----------+-----------+-----------+-----------+
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # |   {:}   |   {:}   |   {:}   |   {:}   |   {:}   |
+        # +-----------+-----------+-----------+-----------+-----------+"""
+        cells = []
+        coords = [(x, 4 - y, 4 - z) for y in range(5) for z in range(4) for x in range(5)]
+        print(cells)
+        for xy in coords:
+            value = self.board_dict[(xy[0], xy[1])]
+            if value[1] is not None and value[0] + 1 == xy[2]:
+                if value[1] == "red":
+                    cells.append("\033[91m  X  \033[0m".center(5))
+                if value[1] == "yellow":
+                    cells.append("\033[93m  X  \033[0m".center(5))
+            else:
+                if value[0] == 0:
+                    cells.append("     ")
+                elif xy[2] <= value[0]:
+                    if xy[2] == 4:
+                        cells.append("M".center(5))
+                    if xy[2] == 3:
+                        cells.append('O'.center(5))
+                    if xy[2] == 2:
+                        cells.append('OOO'.center(5))
+                    if xy[2] == 1:
+                        cells.append('OOOOO'.center(5))
+                else:
+                    cells.append("     ")
+
+
+        print(template.format("", *cells))
 
 
 if __name__ == '__main__':
     board = Board()
-    # print(board.tryout()[0])
-    tuple1 = (1, 2)
-    tuple2 = (1, 2)
-    print(tuple1 == tuple2)
+    board.display_board()
