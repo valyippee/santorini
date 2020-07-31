@@ -14,7 +14,7 @@ class Board:
                 self.board_dict[i, j] = 0, None
         self.players_locations = dict()
 
-    def move(self, player_actions):
+    def move_and_build(self, player_actions):
         """
 
         Args:
@@ -28,6 +28,7 @@ class Board:
 
         current_location = player_actions[0]
         move_location = player_actions[1]
+        build_location = player_actions[2]
         current_player = self.board_dict[current_location][1]
         # check that move location is within reach of the current position and there is a player at current position
         if abs(current_location[0] - move_location[0]) <= 1 and \
@@ -40,13 +41,17 @@ class Board:
                 new_level = self.board_dict[move_location][0]
                 # check that the move location is at most one level higher than the current level and move
                 if new_level - current_level < 1:
-                    self.board_dict[current_location] = current_level, None
-                    self.board_dict[move_location] = new_level, current_player
-                    return True
+                    # check if build action is valid and build OR player won
+                    if self.build(player_actions) or new_level == 3:
+                        self.board_dict[current_location] = current_level, None
+                        self.board_dict[move_location] = new_level, current_player
+                        return True
         return False
 
     def build(self, player_actions):
         """
+
+        A function that is called by move_and_build(self, player_actions)
 
         Args:
             player_actions: Two tuples. First tuple indicates the player's current location,
