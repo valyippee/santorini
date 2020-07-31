@@ -20,5 +20,5 @@ class PlayerWrapper:
         player_actions = self.player.action()
         return player_actions
 
-    def update(self, player, player_actions):
-        self.player.update(player, player_actions)
+    def update(self, player_actions):
+        self.player.update(player_actions)
