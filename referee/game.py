@@ -13,22 +13,31 @@ def play(players):
     Args:
         players: Contains two PlayerWrapper classes which needs to be initialised
 
-    Returns: A string indicating who won/ a tie
+    Returns: A string indicating who won
 
     """
     game = Game()
     for player, colour in zip(players, COLOURS):
         player.init(colour)
     current_player, next_player = players
+
+    for i in range(2):
+        game.board.display_board()
+        print(current_player.colour + "'s turn to choose starting locations")
+        current_player.init_starting_loc()
+        current_player, next_player = next_player, current_player
+
     while not game.check_won():
         game.board.display_board()
 
         # no available moves for current player
         if not game.check_available_moves(current_player.colour):
-            return next_player.colour + " won!"
+            return current_player.colour + " has no available moves. " + next_player.colour + " won!"
 
         print(current_player.colour + "'s turn")
         player_actions = current_player.action()
+        print("Player's action: move from " + str(player_actions[0] + " to " + str(player_actions[1])))
+        print("Build at " + str(player_actions[3]))
         # referee update
         if not game.update(player_actions):
             print("That is not a valid move. Please try again.")

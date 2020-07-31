@@ -12,3 +12,7 @@ class Player:
     def action(self):
         chosen_move = input("Please enter move: ")
         return chosen_move
+
+    def init_starting_loc(self):
+        chosen_move = input("Please enter starting locations: ")
+        return chosen_move
