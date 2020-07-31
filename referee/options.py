@@ -1,5 +1,5 @@
 import argparse
-from santorini.referee.game import GAME_NAME, NUM_PLAYERS, COLOURS
+from game import GAME_NAME, NUM_PLAYERS, COLOURS
 
 DESCRIP = \
 f"conducts a game of {GAME_NAME} between {NUM_PLAYERS} Player classes"

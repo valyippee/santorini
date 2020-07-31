@@ -1,4 +1,4 @@
-from santorini import board
+from board import Board
 
 COLOURS = "red", "yellow"
 NUM_PLAYERS = 2
@@ -47,7 +47,7 @@ def play(players):
 
 class Game:
     def __init__(self):
-        self.board = board.Board()
+        self.board = Board()
 
     def update(self, player_actions):
         return self.board.move_and_build(player_actions)
