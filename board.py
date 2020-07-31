@@ -5,7 +5,8 @@ class Board:
         """
 
         Initialises board_dict, a dictionary where the key is (column, row) of the board and
-        the value is (levels, player colour) and players_locations, a dictionary to store players' locations
+        the value is (levels, player colour) and players_locations, a dictionary to store players' locations,
+        where key is (column, row) and value is the player's colour
 
         """
         self.board_dict = dict()
@@ -28,24 +29,25 @@ class Board:
 
         current_location = player_actions[0]
         move_location = player_actions[1]
-        build_location = player_actions[2]
         current_player = self.board_dict[current_location][1]
-        # check that move location is within reach of the current position and there is a player at current position
-        if abs(current_location[0] - move_location[0]) <= 1 and \
-                abs(current_location[1] - move_location[1]) <= 1 and \
-                move_location != current_location and \
-                current_player is not None:
-            # check that the move location is available
-            if self.board_dict[move_location][1] is None:
-                current_level = self.board_dict[current_location][0]
-                new_level = self.board_dict[move_location][0]
-                # check that the move location is at most one level higher than the current level and move
-                if new_level - current_level < 1:
-                    # check if build action is valid and build OR player won
-                    if self.build(player_actions) or new_level == 3:
-                        self.board_dict[current_location] = current_level, None
-                        self.board_dict[move_location] = new_level, current_player
-                        return True
+        # check that current_location points to a valid player's location
+        if current_location in self.players_locations:
+            # check that move location is within reach of the current position and there is a player at current position
+            if abs(current_location[0] - move_location[0]) <= 1 and \
+                    abs(current_location[1] - move_location[1]) <= 1 and \
+                    move_location != current_location and \
+                    current_player is not None:
+                # check that the move location is available
+                if self.board_dict[move_location][1] is None:
+                    current_level = self.board_dict[current_location][0]
+                    new_level = self.board_dict[move_location][0]
+                    # check that the move location is at most one level higher than the current level and move
+                    if new_level - current_level < 1:
+                        # check if build action is valid and build OR player won
+                        if self.build(player_actions) or new_level == 3:
+                            self.board_dict[current_location] = current_level, None
+                            self.board_dict[move_location] = new_level, current_player
+                            return True
         return False
 
     def build(self, player_actions):
