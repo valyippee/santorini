@@ -21,34 +21,7 @@ def play(players):
         player.init(colour)
     current_player, next_player = players
 
-    initialised = False
-    while not initialised:
-        game.board.display_board()
-        print(current_player.colour + "'s turn")
-        chosen_locations = current_player.choose_starting_loc()
-        # check if locations are valid
-        if len(chosen_locations) != 2:
-            print("Those are not valid locations. Please try again.")
-            continue
-        if chosen_locations[0] == chosen_locations[1]:
-            print("You cannot pick the same location twice. Please try again.")
-            continue
-        if chosen_locations[0] in game.board.players_locations or \
-                chosen_locations[1] in game.board.players_locations:
-            print("The location(s) is/are chosen already. Please try again.")
-            continue
-
-        # update locations (referee and players)
-        game.update_starting_loc(current_player.colour, chosen_locations)
-        print(game.board.players_locations)
-        print(game.board.board_dict)
-        for player in players:
-            player.update_starting_loc(current_player.colour, chosen_locations)
-
-        if current_player.colour == "yellow":
-            initialised = True
-
-        current_player, next_player = next_player, current_player
+    game.initialise_starting_loc(game, current_player, next_player)
 
     while not game.check_won():
         game.board.display_board()
@@ -94,6 +67,12 @@ class Game:
 
     def update(self, player_actions):
         return self.board.move_and_build(player_actions)
+
+    def update_starting_loc(self, player_colour, starting_loc):
+        for location in starting_loc:
+            self.board.players_locations[location] = player_colour
+            location_level = self.board.board_dict[location][0]
+            self.board.board_dict[location] = location_level, player_colour
 
     def check_won(self):
         for key in self.board.players_locations:
@@ -151,8 +130,38 @@ class Game:
                     return True
         return False
 
-    def update_starting_loc(self, player_colour, starting_loc):
-        for location in starting_loc:
-            self.board.players_locations[location] = player_colour
-            location_level = self.board.board_dict[location][0]
-            self.board.board_dict[location] = location_level, player_colour
+    def initialise_starting_loc(self, game, current_player, next_player):
+        initialised = False
+        while not initialised:
+            game.board.display_board()
+            print(current_player.colour + "'s turn")
+            chosen_locations = current_player.choose_starting_loc()
+            # check if locations are valid
+            if len(chosen_locations) != 2:
+                print("Those are not valid locations. Please try again.")
+                continue
+            if chosen_locations[0] == chosen_locations[1]:
+                print("You cannot pick the same location twice. Please try again.")
+                continue
+            if chosen_locations[0] in game.board.players_locations or \
+                    chosen_locations[1] in game.board.players_locations:
+                print("The location(s) is/are chosen already. Please try again.")
+                continue
+            out_of_range = False
+            for i in range(2):
+                for j in range(2):
+                    if chosen_locations[i][j] > 4 or chosen_locations[i][j] < 0:
+                        out_of_range = True
+            if out_of_range:
+                print("Coordinate(s) is/are out of range. Please try again.")
+                continue
+
+            # update locations (referee and players)
+            game.update_starting_loc(current_player.colour, chosen_locations)
+            for player in [current_player, next_player]:
+                player.update_starting_loc(current_player.colour, chosen_locations)
+
+            if current_player.colour == "yellow":
+                initialised = True
+
+            current_player, next_player = next_player, current_player
