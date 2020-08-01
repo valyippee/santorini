@@ -12,12 +12,7 @@ class AgentBoard:
         self.board_dict = dict()
         for i in range(self.BOARD_WIDTH):
             for j in range(self.BOARD_WIDTH):
-                if i == 2 and j == 2:
-                    self.board_dict[i, j] = 0, "red"
-                elif i == 2 and j == 3:
-                    self.board_dict[i, j] = 0, "red"
-                else:
-                    self.board_dict[i, j] = 0, None
+                self.board_dict[i, j] = 0, None
 
         self.players_locations = dict()
 
@@ -122,7 +117,6 @@ class AgentBoard:
                             surrounding_squares.append(square)
         return surrounding_squares
 
-
     def generate_all_actions(self, colour):
         all_moves = []
         all_actions = []
@@ -140,11 +134,16 @@ class AgentBoard:
         for move in all_moves:
             surrounding_squares = self.generate_surrounding_squares(move[1])
             for square in surrounding_squares:
-                if self.board_dict[square][0] == 4 or self.board_dict[square][1] is not None:
+                if move[0] == square:
+                    all_actions.append((move[0], move[1], square))
+                elif self.board_dict[square][0] == 4 or self.board_dict[square][1] is not None:
                     continue
                 else:
                     all_actions.append((move[0], move[1], square))
 
+        print(player_positions)
+        print(self.board_dict.values())
+        print(all_moves)
         return all_actions
 
     def display_board(self):
