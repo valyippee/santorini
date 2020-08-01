@@ -58,14 +58,21 @@ def play(players):
             return current_player.colour + " has no available moves. " + next_player.colour + " won!"
 
         print(current_player.colour + "'s turn")
+        print(game.board.board_dict)
+        print(game.board.players_locations)
         player_actions = current_player.action()
 
         # check if move is valid + referee update if valid
-        if len(player_actions) != 3 or game.update(player_actions):
-            print("That is not a valid move. Please try again.")
+        if len(player_actions) != 3:
+            print("Invalid move. Please try again.")
             continue
-        if game.board.players_locations[player_actions[0]] != current_player.colour:
+        if player_actions[0] not in game.board.players_locations or \
+                game.board.players_locations[player_actions[0]] != current_player.colour:
             print("You did not select your game piece correctly. Please try again.")
+            continue
+        if not game.update(player_actions):
+            print("Invalid move. Please try again.")
+            continue
         # players update
         for player in players:
             player.update(player_actions)
