@@ -20,7 +20,7 @@ class Board:
         """
 
         Args:
-            player_actions: Two tuples. First tuple indicates the player's current location (assume valid),
+            player_actions: Three tuples. First tuple indicates the player's current location (assume valid),
                             second tuple indicates the location to be moved to,
                             third tuple indicates the location to build on
 
@@ -49,6 +49,8 @@ class Board:
                     # check if build action is valid and build OR player won
                     if self.build(player_actions) or new_level == 3:
                         # print("fourth layer checked: built/ won")
+                        # current_level may change due to build()
+                        current_level = self.board_dict[current_location][0]
                         self.board_dict[current_location] = current_level, None
                         self.board_dict[move_location] = new_level, current_player
                         del self.players_locations[current_location]
@@ -62,7 +64,7 @@ class Board:
         A function that is called by move_and_build(self, player_actions)
 
         Args:
-            player_actions: Two tuples. First tuple indicates the player's current location,
+            player_actions: Three tuples. First tuple indicates the player's current location,
                             second tuple indicates the location to be moved to,
                             third tuple indicates the location to build on
 
@@ -73,6 +75,11 @@ class Board:
         # print("INSIDE BUILT FUNCTION")
         move_location = player_actions[1]
         build_location = player_actions[2]
+        Level_before_build = self.board_dict[build_location][0]
+        # check if build location is current location (build is valid since player will move away)
+        if build_location == player_actions[0]:
+            self.board_dict[build_location] = Level_before_build + 1, None
+            return True
         # check that build location is within reach of moved to location
         if abs(build_location[0] - move_location[0]) <= 1 and \
                 abs(build_location[1] - move_location[1]) <= 1 and \
@@ -84,8 +91,7 @@ class Board:
                 # check that there are no players at build location and build
                 if self.board_dict[build_location][1] is None:
                     # print("last layer checked: no players on build location")
-                    current_level = self.board_dict[build_location][0]
-                    self.board_dict[build_location] = current_level + 1, None
+                    self.board_dict[build_location] = Level_before_build + 1, None
                     return True
         return False
 
