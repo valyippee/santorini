@@ -31,8 +31,6 @@ def play(players):
             return current_player.colour + " has no available moves. " + next_player.colour + " won!"
 
         print(current_player.colour + "'s turn")
-        print(game.board.board_dict)
-        print(game.board.players_locations)
         player_actions = current_player.action()
 
         # check if move is valid + referee update if valid
