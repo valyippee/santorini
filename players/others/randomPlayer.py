@@ -1,6 +1,6 @@
 import random
 
-from players.valerie.agentBoard import AgentBoard
+from players.korkor.agentBoard import AgentBoard
 
 
 class Player:

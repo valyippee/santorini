@@ -111,20 +111,20 @@ class AgentBoard:
     def generate_all_actions(self, colour):
         all_moves = []
         all_actions = []
-        player_positions = []
-        for key in self.board_dict.keys():
-            if self.board_dict[key][1] == colour:
-                player_positions.append(key)
-        for position in player_positions:
-            surrounding_squares = self.generate_surrounding_squares(position)
-            for square in surrounding_squares:
-                if self.board_dict[square][0] == 4:
-                    continue
-                if self.board_dict[square][0] <= self.board_dict[position][0] + 1 and self.board_dict[square][1] is None:
-                    all_moves.append((position, square))
+        # find all possible move-to locations
+        for key in self.players_locations:
+            if self.players_locations[key] == colour:
+                surrounding_squares = self.generate_surrounding_squares(key)
+                for square in surrounding_squares:
+                    if self.board_dict[square][0] == 4:
+                        continue
+                    if self.board_dict[square][0] <= self.board_dict[key][0] + 1 and self.board_dict[square][1] is None:
+                        all_moves.append((key, square))
+        # for each possible move-to location, find all possible build-on locations
         for move in all_moves:
             surrounding_squares = self.generate_surrounding_squares(move[1])
             for square in surrounding_squares:
+                # able to build on the current location of player
                 if move[0] == square:
                     all_actions.append((move[0], move[1], square))
                 elif self.board_dict[square][0] == 4 or self.board_dict[square][1] is not None:
@@ -132,9 +132,6 @@ class AgentBoard:
                 else:
                     all_actions.append((move[0], move[1], square))
 
-        print(player_positions)
-        print(self.board_dict.values())
-        print(all_moves)
         return all_actions
 
     def check_won(self):
@@ -151,6 +148,8 @@ class AgentBoard:
             if colour == won_colour:
                 return 10000
             return -10000
+        return score
+
 
     def display_board(self):
         template = """# {}
@@ -183,7 +182,6 @@ class AgentBoard:
         # y/x    0           1           2           3           4"""
         cells = []
         coords = [(x, 4 - y, 4 - z) for y in range(5) for z in range(4) for x in range(5)]
-        print(cells)
         for xy in coords:
             value = self.board_dict[(xy[0], xy[1])]
             if value[1] is not None and value[0] + 1 == xy[2]:
@@ -211,5 +209,7 @@ class AgentBoard:
 
 
 if __name__ == '__main__':
-    tryout = (0, 1)
-    print(bool(tryout))
+    board = AgentBoard()
+    board.display_board()
+    board.players_locations = {(0, 1): "red", (4, 3): "red", (2, 2): "yellow", (4, 4): "yellow"}
+    board.generate_all_actions("red")
