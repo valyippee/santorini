@@ -1,6 +1,6 @@
 import random
 
-from santorini.players.agentBoard import AgentBoard
+from players.valerie.agentBoard import AgentBoard
 
 
 class Player:
