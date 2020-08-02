@@ -93,41 +93,12 @@ class Game:
                     for j in range(-1, 2):
                         if i == 0 and j == 0:
                             continue
-                        if self.available_to_move(x_location + i, y_location + j, current_level):
-                            del self.board.players_locations[player_location]
-                            if self.available_to_build(x_location + i, y_location + j):
-                                self.board.players_locations[player_location] = player_colour
-                                return True
-                            self.board.players_locations[player_location] = player_colour
-        return False
-
-    def available_to_move(self, x_location, y_location, current_level):
-        """
-            Given a move-to location and player's current level,
-            return True if move-to location is available and reachable, False otherwise
-        """
-
-        if (x_location, y_location) in self.board.board_dict:
-            # check if the adjacent location is available (no other players on it)
-            if self.board.board_dict[(x_location, y_location)][1] is None:
-                # check if that location is reachable
-                if self.board.board_dict[(x_location, y_location)][0] - current_level <= 1:
-                    return True
-        return False
-
-    def available_to_build(self, x_location, y_location):
-        """
-        Given a location, return True if build action is possible around that location, False otherwise
-        """
-
-        for i in range(-1, 2):
-            for j in range(-1, 2):
-                if i == 0 and j == 0:
-                    continue
-                if (x_location + i, y_location + j) in self.board.board_dict:
-                    if self.board.board_dict[(x_location + i, y_location + j)][1] is None and \
-                            self.board.board_dict[(x_location + i, y_location + j)][0] < 4:
-                        return True
+                        if (x_location + i, y_location + j) in self.board.board_dict:
+                            # check if the adjacent location is available (no other players on it)
+                            if self.board.board_dict[(x_location + i, y_location + j)][1] is None:
+                                # check if that location is reachable
+                                if self.board.board_dict[(x_location + i, y_location + j)][0] - current_level <= 1:
+                                    return True
         return False
 
     def initialise_starting_loc(self, game, current_player, next_player):
