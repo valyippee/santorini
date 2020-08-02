@@ -117,7 +117,6 @@ class Board:
         # y/x    0           1           2           3           4"""
         cells = []
         coords = [(x, 4 - y, 4 - z) for y in range(5) for z in range(4) for x in range(5)]
-        print(cells)
         for xy in coords:
             value = self.board_dict[(xy[0], xy[1])]
             if value[1] is not None and value[0] + 1 == xy[2]:
