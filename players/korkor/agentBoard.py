@@ -43,8 +43,7 @@ class AgentBoard:
                 # check that the move location is at most one level higher than the current level and move
                 if new_level - current_level <= 1:
                     # check if build action is valid and build OR player won
-                    if (new_level == 3 and player_actions[2] == (-1, -1)) or \
-                            self.build(player_actions):
+                    if new_level == 3 or self.build(player_actions):
                         # current_level may change due to build()
                         current_level = self.board_dict[current_location][0]
                         self.board_dict[current_location] = current_level, None

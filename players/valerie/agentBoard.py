@@ -43,8 +43,7 @@ class AgentBoard:
                 # check that the move location is at most one level higher than the current level and move
                 if new_level - current_level <= 1:
                     # check if build action is valid and build OR player won
-                    if (new_level == 3 and player_actions[2] == (-1, -1)) or \
-                            self.build(player_actions):
+                    if new_level == 3 or self.build(player_actions):
                         # current_level may change due to build()
                         current_level = self.board_dict[current_location][0]
                         self.board_dict[current_location] = current_level, None
@@ -138,6 +137,21 @@ class AgentBoard:
         print(all_moves)
         return all_actions
 
+    def check_won(self):
+        for key in self.players_locations:
+            if self.board_dict[key][0] == 3:
+                return self.board_dict[key]
+        return False
+
+    def heuristic(self, colour):
+        score = 0
+        won = self.check_won()
+        if won:
+            won_colour = won[1]
+            if colour == won_colour:
+                return 10000
+            return -10000
+
     def display_board(self):
         template = """# {}
         #  +-----------+-----------+-----------+-----------+-----------+
@@ -197,6 +211,5 @@ class AgentBoard:
 
 
 if __name__ == '__main__':
-    board = AgentBoard()
-    board.display_board()
-    board.generate_all_actions("red")
+    tryout = (0, 1)
+    print(bool(tryout))
