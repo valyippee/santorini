@@ -1,4 +1,4 @@
-from board import Board
+from referee.board import Board
 
 COLOURS = "red", "yellow"
 NUM_PLAYERS = 2

@@ -1,4 +1,4 @@
-from board import Board
+from referee.board import Board
 
 
 class Player:
