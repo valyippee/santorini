@@ -28,7 +28,6 @@ class AgentBoard:
 
         """
 
-        # print("ENTERING MOVE AND BUILD FUNCTION!!")
         current_location = player_actions[0]
         move_location = player_actions[1]
         current_player = self.board_dict[current_location][1]
@@ -37,18 +36,15 @@ class AgentBoard:
                 abs(current_location[1] - move_location[1]) <= 1 and \
                 move_location != current_location and \
                 current_player is not None:
-            # print("first layer checked")
             # check that the move location is available
             if self.board_dict[move_location][1] is None:
-                # print("second layer checked")
                 current_level = self.board_dict[current_location][0]
                 new_level = self.board_dict[move_location][0]
                 # check that the move location is at most one level higher than the current level and move
                 if new_level - current_level <= 1:
-                    # print("third layer: level within reach")
                     # check if build action is valid and build OR player won
-                    if self.build(player_actions) or new_level == 3:
-                        # print("fourth layer checked: built/ won")
+                    if (new_level == 3 and player_actions[2] == (-1, -1)) or \
+                            self.build(player_actions):
                         # current_level may change due to build()
                         current_level = self.board_dict[current_location][0]
                         self.board_dict[current_location] = current_level, None
@@ -72,7 +68,6 @@ class AgentBoard:
 
         """
 
-        # print("INSIDE BUILT FUNCTION")
         move_location = player_actions[1]
         build_location = player_actions[2]
         Level_before_build = self.board_dict[build_location][0]
@@ -84,13 +79,10 @@ class AgentBoard:
         if abs(build_location[0] - move_location[0]) <= 1 and \
                 abs(build_location[1] - move_location[1]) <= 1 and \
                 move_location != build_location:
-            # print("first layer checked")
             # check that no. of levels is at most 3 at build location
             if self.board_dict[build_location][0] <= 3:
-                # print("second layer checked: levels at most 3")
                 # check that there are no players at build location and build
                 if self.board_dict[build_location][1] is None:
-                    # print("last layer checked: no players on build location")
                     self.board_dict[build_location] = Level_before_build + 1, None
                     return True
         return False
