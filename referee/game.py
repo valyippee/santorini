@@ -25,6 +25,7 @@ def play(players):
 
     while not game.check_won():
         game.board.display_board()
+        print(game.board.players_locations)
 
         # no available moves for current player
         if not game.check_available_moves(current_player.colour):
@@ -97,6 +98,7 @@ class Game:
                             if self.available_to_build(x_location + i, y_location + j):
                                 self.board.players_locations[player_location] = player_colour
                                 return True
+                            self.board.players_locations[player_location] = player_colour
         return False
 
     def available_to_move(self, x_location, y_location, current_level):
@@ -122,10 +124,10 @@ class Game:
             for j in range(-1, 2):
                 if i == 0 and j == 0:
                     continue
-            if (x_location + i, y_location + j) in self.board.board_dict:
-                if self.board.board_dict[(x_location + i, y_location + j)][1] is None and \
-                        self.board.board_dict[(x_location + i, y_location + j)][0] < 4:
-                    return True
+                if (x_location + i, y_location + j) in self.board.board_dict:
+                    if self.board.board_dict[(x_location + i, y_location + j)][1] is None and \
+                            self.board.board_dict[(x_location + i, y_location + j)][0] < 4:
+                        return True
         return False
 
     def initialise_starting_loc(self, game, current_player, next_player):
