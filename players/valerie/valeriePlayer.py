@@ -29,7 +29,7 @@ class Player:
         for action in self.board.generate_all_actions(self.colour):
             resulting_board = copy.deepcopy(self.board)
             resulting_board.move_and_build(action)
-            score = self.minimax(resulting_board, 1, alpha, beta, False)
+            score = self.minimax(resulting_board, 2, alpha, beta, False)
             action_scores.append((score, action))
         sorted_action_score = sorted(action_scores, reverse=True)
 
@@ -40,17 +40,12 @@ class Player:
                 best_action_list.append(i)
         print(best_action_list)
         chosen_move = random.choice(best_action_list)
-        return chosen_move
+        return chosen_move[1]
 
     def choose_starting_loc(self):
-        chosen_move = input("Please enter starting locations: ")
-        try:
-            move_list = chosen_move.split(" ")
-            for i in range(len(move_list)):
-                move_list[i] = int(move_list[i])
-            return (move_list[0], move_list[1]), (move_list[2], move_list[3])
-        except:
-            return 0,
+        locs = self.board.generate_starting_loc()
+        chosen = random.sample(locs, 2)
+        return chosen[0], chosen[1]
 
     def minimax(self, board, depth, alpha, beta, maximizingPlayer):
         if depth == 0 or board.check_won():

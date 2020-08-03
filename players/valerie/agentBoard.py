@@ -89,9 +89,7 @@ class AgentBoard:
     def generate_starting_loc(self):
         loc = []
         for key in self.board_dict.keys():
-            if self.board_dict[key][1] is not None:
-                continue
-            else:
+            if self.board_dict[key][1] is None and 1 <= key[0] <= 3 and 1 <= key[1] <= 3:
                 loc.append(key)
         return loc
 
@@ -146,10 +144,55 @@ class AgentBoard:
         if won:
             won_colour = won[1]
             if colour == won_colour:
-                return 10000
-            return -10000
+                return 100000
+            return -100000
+        # number of levels your players you are at - opponent's
+        for loc in self.players_locations:
+            level = self.board_dict[loc][0]
+            level_score = 0
+            if level == 2:
+                level_score = 10000
+            if level == 1:
+                level_score = 1000
+            if self.players_locations[loc] == colour:
+                score += level_score
+            else:
+                score -= level_score
+        # no. of available buildings to move to around you - opponent's
+        score += self.available_buildings_score(colour)
         return score
 
+    def available_buildings_score(self, colour):
+        score = 0
+        opponent_score = 0
+        for loc in self.players_locations:
+            building_score = 0
+            current_level = self.board_dict[loc][0]
+            for i in range(2):
+                for j in range(2):
+                    if (i == 0 and j == 0) or not 0 <= loc[0] - i <= 4 or not  0 <= loc[1] - j <= 4:
+                        continue
+                    if self.board_dict[loc[0] - i, loc[1] - j][1] is not None:
+                        if self.board_dict[loc[0] - i, loc[1] - j][0] - current_level == 1:
+                            if current_level == 0:
+                                building_score += 10
+                            if current_level == 1:
+                                building_score += 500
+                            if current_level == 2:
+                                building_score += 5000
+                        if self.board_dict[loc[0] - i, loc[1] - j][0] - current_level == 0:
+                            if current_level == 1:
+                                building_score += 100
+                            if current_level == 2:
+                                building_score += 1000
+                        if self.board_dict[loc[0] - i, loc[1] - j][0] - current_level == -1:
+                            if current_level == 2:
+                                building_score += 100
+            if self.players_locations[loc] == colour:
+                score += building_score
+            else:
+                opponent_score += building_score
+        return score - opponent_score
 
     def display_board(self):
         template = """# {}
