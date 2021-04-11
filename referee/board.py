@@ -1,3 +1,8 @@
+from colorit import *
+
+init_colorit()
+
+
 class Board:
     BOARD_WIDTH = 5
 
@@ -121,9 +126,11 @@ class Board:
             value = self.board_dict[(xy[0], xy[1])]
             if value[1] is not None and value[0] + 1 == xy[2]:
                 if value[1] == "red":
-                    cells.append("\033[31m  X  \033[0m".center(5))
+                    # cells.append("\033[31m  X  \033[0m".center(5))
+                    cells.append(color("  X  ", (255, 0, 0)).center(5))
                 if value[1] == "yellow":
-                    cells.append("\033[33m  X  \033[0m".center(5))
+                    # cells.append("\033[33m  X  \033[0m".center(5))
+                    cells.append(color("  X  ", (255, 255, 0)).center(5))
             else:
                 if value[0] == 0:
                     cells.append("     ")
