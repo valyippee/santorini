@@ -1,3 +1,23 @@
+class Queue:
+    "A container with a first-in-first-out (FIFO) queuing policy."
+    def __init__(self):
+        self.list = []
+
+    def push(self,item):
+        "Enqueue the 'item' into the queue"
+        self.list.insert(0,item)
+
+    def pop(self):
+        """
+          Dequeue the earliest enqueued item still in the queue. This
+          operation removes the item from the queue.
+        """
+        return self.list.pop()
+
+    def isEmpty(self):
+        "Returns true if the queue is empty"
+        return len(self.list) == 0
+
 class AgentBoard:
     BOARD_WIDTH = 5
 
@@ -15,6 +35,7 @@ class AgentBoard:
                 self.board_dict[i, j] = 0, None
 
         self.players_locations = dict()
+        self.last_moved = None
 
     def move_and_build(self, player_actions):
         """
@@ -50,6 +71,7 @@ class AgentBoard:
                         self.board_dict[move_location] = new_level, current_player
                         del self.players_locations[current_location]
                         self.players_locations[move_location] = current_player
+                        self.last_moved = current_player
                         return True
         return False
 
@@ -91,7 +113,7 @@ class AgentBoard:
         for key in self.board_dict.keys():
             if self.board_dict[key][1] is not None:
                 continue
-            else:
+            elif 0 < key[0] < 4 and 0 < key[1] < 4:
                 loc.append(key)
         return loc
 
@@ -132,10 +154,140 @@ class AgentBoard:
                 else:
                     all_actions.append((move[0], move[1], square))
 
-        print(player_positions)
-        print(self.board_dict.values())
-        print(all_moves)
         return all_actions
+
+    def game_over(self):
+        for coord in self.board_dict.keys():
+            if self.board_dict[coord][0] == 3:
+                if self.board_dict[coord][1] is not None:
+                    return True
+        return False
+
+    def check_win(self, colour):
+        for coord in self.board_dict.keys():
+            if self.board_dict[coord][0] == 3:
+                if self.board_dict[coord][1] == colour:
+                    return True
+        return False
+
+    def man_distance(self, coord1, coord2):
+        return abs(coord1[0] - coord2[0]) + abs(coord1[1] - coord2[1])
+
+    def total_man_distance(self):
+        red = []
+        yellow = []
+        total = float('inf')
+        for key in self.board_dict.keys():
+            if self.board_dict[key] == "red":
+                red.append(key)
+            else:
+                yellow.append(key)
+        for coord in red:
+            curr = self.man_distance(coord, yellow[0]) + self.man_distance(coord, yellow[1])
+            if curr < total:
+                total = curr
+        return total
+
+    def surrounding_tiles(self, coord):
+        directions = [(1, 1), (1, 0), (0, 0), (1, -1), (0, -1), (-1, -1), (-1, 0), (0, 1)]
+        surrounding = []
+        for i in directions:
+            coordinate = (coord[0] + i[0], coord[1] + i[1])
+            if 0 <= coordinate[0] <= 4 and 0 <= coordinate[1] <= 4:
+                surrounding.append(coordinate)
+        return surrounding
+
+    def movable_count(self, colour):
+        coord = []
+        total = 0
+        for key in self.board_dict.keys():
+            if self.board_dict[key] == colour:
+                coord.append(key)
+        for i in coord:
+            curr_level = self.board_dict[i][0]
+            for j in self.surrounding_tiles(i):
+                if self.board_dict[j][1] is None and curr_level >= (self.board_dict[j][0] - 1):
+                    total += (curr_level ** 2 + self.board_dict[j][0] ** 2)
+        return total
+
+    # def breadthFirstSearch(self):
+    #     """Search the shallowest nodes in the search tree first."""
+    #     myqueue = Queue()
+    #     startNode = (problem.getStartState(), '', 0, [])
+    #     myqueue.push(startNode)
+    #     visited = set()
+    #     while myqueue:
+    #         node = myqueue.pop()
+    #         state, action, cost, path = node
+    #         if state not in visited:
+    #             visited.add(state)
+    #             if problem.isGoalState(state):
+    #                 path = path + [(state, action)]
+    #                 break
+    #             succNodes = problem.expand(state)
+    #             for succNode in succNodes:
+    #                 succState, succAction, succCost = succNode
+    #                 newNode = (succState, succAction, cost + succCost, path + [(state, action)])
+    #                 myqueue.push(newNode)
+    #     actions = [action[1] for action in path]
+    #     del actions[0]
+    #     return actions
+
+    def moves_from_winning(self, colour):
+        coord = []
+        moves_to_win = []
+
+        for key in self.board_dict.keys():
+            if self.board_dict[key][1] == colour:
+                coord.append(key)
+
+        for i in coord:
+            curr_level = self.board_dict[i][0]
+            for j in self.surrounding_tiles(i):
+                if curr_level == 0:
+                    if self.board_dict[j][0] <= 3:
+                        moves_to_win.append(5)
+                    else:
+                        moves_to_win.append(6)
+                elif curr_level == 1:
+                    if self.board_dict[j][0] <= 2:
+                        moves_to_win.append(5 - self.board_dict[j][0])
+                    elif self.board_dict[j][0] == 3:
+                        moves_to_win.append(4)
+                    else:
+                        moves_to_win.append(5)
+                elif curr_level == 2:
+                    if self.board_dict[j][0] == 0:
+                        moves_to_win.append(5)
+                    elif self.board_dict[j][0] == 1:
+                        moves_to_win.append(4)
+                    elif self.board_dict[j][0] == 2:
+                        moves_to_win.append(2)
+                    else:
+                        moves_to_win.append(5)
+
+        return min(moves_to_win)
+
+
+    def heuristic(self, colour):
+        opp_level_sum = 0
+        my_level_sum = 0
+        if colour == "red":
+            opp_colour = "yellow"
+        else:
+            opp_colour = "red"
+        if self.check_win(colour):
+            return 100000
+        elif self.check_win(opp_colour):
+            return -100000
+        for coord in self.board_dict.keys():
+            if self.board_dict[coord][1] == colour:
+                my_level_sum += (self.board_dict[coord][0]) ** 2
+            if self.board_dict[coord][1] == opp_colour:
+                opp_level_sum += (self.board_dict[coord][0]) ** 2
+        score = my_level_sum - opp_level_sum + (self.movable_count(colour) - self.movable_count(opp_colour)) * 0.2
+
+        return self.moves_from_winning(opp_colour) - self.moves_from_winning(colour)
 
     def display_board(self):
         template = """# {}
